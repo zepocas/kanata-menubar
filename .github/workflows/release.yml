@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Toolchain
+        run: |
+          xcode-select -p
+          swift --version
+
+      - name: Bundle
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: make bundle
+
+      - name: Zip
+        run: ditto -c -k --sequesterRsrc --keepParent build/KanataMenubar.app build/KanataMenubar.app.zip
+
+      - name: Publish release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" build/KanataMenubar.app.zip \
+            --title "${{ github.ref_name }}" \
+            --generate-notes

@@ -16,7 +16,15 @@ It's plain Swift and AppKit with no dependencies. It uses almost no CPU while id
   or path, update the constants at the top of `Sources/KanataMenubar/ServiceController.swift`.
 - Swift 6 toolchain: either Xcode or just the Command Line Tools (`xcode-select --install`).
 
-## Setup
+## Install
+
+```sh
+brew install --cask zepocas/tap/kanata-menubar
+```
+
+This installs the prebuilt app straight into `/Applications` and opens it.
+
+## Build from source
 
 ```sh
 git clone git@github.com:zepocas/kanata-menubar.git
@@ -89,9 +97,21 @@ scripts/                 bundle.sh (builds the .app), make-icon.sh (regenerates 
 | `make test` | unit tests |
 | `make install` | release build, installed to `/Applications` |
 | `make run` | install and open |
-| `make uninstall` | remove the app |
+| `make agents` / `make uninstall-agents` | install / remove the login LaunchAgent |
+| `make uninstall` | remove the agent and the app |
 | `make icon` | regenerate `AppIcon.icns` |
 | `make clean` | delete build output |
+
+### Releasing
+
+Pushing a `v*` tag (e.g. `v0.1.0`) makes CI build, zip and publish a GitHub Release with the app
+attached — `bundle.sh` stamps `CFBundleShortVersionString` from the tag. Then, with a sibling
+`../homebrew-tap` checkout:
+
+```sh
+scripts/bump-cask.sh          # downloads the latest release, updates Casks/kanata-menubar.rb
+git -C ../homebrew-tap commit -am "kanata-menubar 0.1.0" && git -C ../homebrew-tap push
+```
 
 ## License
 
