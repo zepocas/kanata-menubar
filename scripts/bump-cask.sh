@@ -27,7 +27,7 @@ sed -i '' \
     "$CASK"
 
 echo
-git -C "$TAP_DIR" --no-pager diff -- "$CASK"
+git -C "$TAP_DIR" --no-pager diff -- "Casks/kanata-menubar.rb"
 echo
 echo "Updated $CASK to $VERSION. Review the diff above, then:"
 echo "  git -C \"$TAP_DIR\" commit -am \"kanata-menubar $VERSION\" && git -C \"$TAP_DIR\" push"
