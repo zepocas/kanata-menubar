@@ -31,6 +31,21 @@ its autosaved menubar position to stick.
 **Using Thaw, Ice or Bartender?** New items can land in the hidden section. Drag **Kanata
 Menubar** into the visible section, using the manager's layout settings or ⌘-drag in the menubar.
 
+### Start at login
+
+```sh
+make agents
+```
+
+This installs `io.github.zepocas.kanata-menubar` into `~/Library/LaunchAgents` and loads it: the
+app starts at login, restarts if it crashes, and stays quit if you quit it from the menu — the
+same behavior as the `komorebi` and `skhd` agents in
+[komorebi-menubar](https://github.com/zepocas/komorebi-menubar).
+
+```sh
+make uninstall-agents   # stop starting it at login
+```
+
 ## Usage
 
 **The icon** — a static "K" keycap. It dims when kanata isn't running.
@@ -46,6 +61,17 @@ Menubar** into the visible section, using the manager's layout settings or ⌘-d
 
 Stopping, resuming and restarting change a **system** daemon, so macOS shows its standard
 administrator-password (or Touch ID) prompt each time. Reading status never prompts.
+
+**Does this start kanata automatically?** Not by itself. kanata's own LaunchDaemon has
+`RunAtLoad` and `KeepAlive` set, so macOS already starts it at boot and relaunches it on its own if
+it crashes — with or without this app running. This app never resumes it on your behalf; it only
+acts when *you* click something.
+
+**Does Stop Kanata survive a reboot?** No. `launchctl bootout` (what **Stop** runs) only removes
+kanata from the currently running launchd session. At the next boot or login, launchd reloads every
+LaunchDaemon under `/Library/LaunchDaemons` from scratch, `RunAtLoad` fires, and kanata comes back
+— regardless of whether you'd stopped it before. A `Stop` that survives reboots would need
+`launchctl disable system/local.kanata` instead, which isn't what this app does today.
 
 ## Development
 

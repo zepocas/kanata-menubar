@@ -12,7 +12,7 @@ TEST_FLAGS := -Xswiftc -F -Xswiftc $(CLT_FRAMEWORKS) \
 	-Xlinker -F -Xlinker $(CLT_FRAMEWORKS) -Xlinker -rpath -Xlinker $(CLT_FRAMEWORKS)
 endif
 
-.PHONY: build test bundle install run uninstall icon clean
+.PHONY: build test bundle install run uninstall agents uninstall-agents icon clean
 
 build:
 	swift build
@@ -34,10 +34,17 @@ install: bundle
 run: install
 	open "$(APP_PATH)"
 
-uninstall:
+uninstall: uninstall-agents
 	-pkill -x $(APP_NAME)
 	rm -rf "$(APP_PATH)"
 	@echo "Removed $(APP_PATH)"
+
+# Starts Kanata Menubar at login through launchd.
+agents: install
+	scripts/install-agents.sh
+
+uninstall-agents:
+	scripts/install-agents.sh --uninstall
 
 # Regenerates Resources/AppIcon.icns.
 icon:
