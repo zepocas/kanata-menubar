@@ -1,5 +1,7 @@
 # Kanata Menubar
 
+<img src="Resources/AppIcon.svg" width="96" alt="Kanata Menubar icon">
+
 [![CI](https://github.com/zepocas/kanata-menubar/actions/workflows/ci.yml/badge.svg)](https://github.com/zepocas/kanata-menubar/actions/workflows/ci.yml)
 
 A tiny native menubar app to track, stop and restart [kanata](https://github.com/jtroo/kanata) on
