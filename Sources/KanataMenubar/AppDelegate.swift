@@ -12,6 +12,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: StatusItemController!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Start at Login (RunAtLoad) can race an already-running copy launched by hand or by macOS
+        // reopening it, which would otherwise show two keycap icons. Defer to whichever started first.
+        let bundleID = Bundle.main.bundleIdentifier ?? ""
+        guard NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).count <= 1 else {
+            NSApp.terminate(nil)
+            return
+        }
+
         migrateLegacyLaunchAgent()
 
         menu.delegate = self
