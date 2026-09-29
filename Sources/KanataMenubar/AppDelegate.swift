@@ -12,12 +12,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: StatusItemController!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Start at Login (RunAtLoad) can race an already-running copy launched by hand or by macOS
-        // reopening it, which would otherwise show two keycap icons. Defer to whichever started first.
-        let bundleID = Bundle.main.bundleIdentifier ?? ""
-        guard NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).count <= 1 else {
-            NSApp.terminate(nil)
-            return
+        // Only one keycap icon: the newest copy wins and asks older ones to quit. Deferring to the
+        // older one instead loses both during `brew upgrade`, which reopens the app while the old
+        // copy is still quitting. A clean quit exits 0, so the login agent's KeepAlive leaves it be.
+        let me = NSRunningApplication.current.processIdentifier
+        for other in NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "")
+        where other.processIdentifier != me {
+            other.terminate()
         }
 
         menu.delegate = self
