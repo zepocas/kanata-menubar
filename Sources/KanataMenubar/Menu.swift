@@ -22,14 +22,30 @@ extension AppDelegate: NSMenuDelegate {
         menu.addItem(stopResume)
 
         menu.addItem(.separator())
-        let loginItem = ActionMenuItem(title: "Start at Login") { [weak self] in self?.toggleLoginItem() }
-        loginItem.state = LoginItem.isEnabled ? .on : .off
-        menu.addItem(loginItem)
+        let startup = NSMenuItem(title: "Start at Login", action: nil, keyEquivalent: "")
+        startup.submenu = startupMenu()
+        menu.addItem(startup)
 
         menu.addItem(.separator())
         menu.addItem(ActionMenuItem(title: "Quit Kanata Menubar", keyEquivalent: "q") {
             NSApp.terminate(nil)
         })
+    }
+
+    private func startupMenu() -> NSMenu {
+        let submenu = NSMenu()
+        submenu.autoenablesItems = false
+
+        let app = ActionMenuItem(title: "Kanata Menubar") { [weak self] in self?.toggleLoginItem() }
+        app.state = LoginItem.isEnabled ? .on : .off
+        submenu.addItem(app)
+
+        let kanata = ActionMenuItem(title: "kanata (at boot)") { [weak self] in self?.toggleStartsAtBoot() }
+        kanata.state = watcher.startsAtBoot ? .on : .off
+        kanata.isEnabled = !busy
+        kanata.toolTip = "Whether macOS starts the local.kanata LaunchDaemon at boot. Asks for your password."
+        submenu.addItem(kanata)
+        return submenu
     }
 
     private func statusItem(for status: KanataStatus) -> NSMenuItem {

@@ -5,6 +5,7 @@ import MenubarCore
 @MainActor
 final class ServiceWatcher {
     private(set) var status: KanataStatus = .unknown
+    private(set) var startsAtBoot = true
     var onChange: ((KanataStatus) -> Void)?
 
     private let services: ServiceController
@@ -27,6 +28,7 @@ final class ServiceWatcher {
     func poll() {
         Task { @MainActor [weak self] in
             guard let self else { return }
+            startsAtBoot = await services.fetchStartsAtBoot()
             let status = await services.fetchStatus()
             guard status != self.status else { return }
             self.status = status

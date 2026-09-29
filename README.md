@@ -52,30 +52,28 @@ Menubar** into the visible section, using the manager's layout settings or ⌘-d
 | Kanata — running / stopped | Current state, shown greyed out |
 | **Restart Kanata** | `launchctl kickstart -k system/local.kanata`. Disabled while kanata is stopped |
 | **Stop Kanata** / **Resume Kanata** | Unloads (`bootout`) or reloads (`bootstrap`) the LaunchDaemon |
-| **Start at Login** | Writes or deletes `~/Library/LaunchAgents/io.github.zepocas.kanata-menubar.plist`. Off by default |
+| **Start at Login ▸ Kanata Menubar** | Whether this app starts at login. Off by default |
+| **Start at Login ▸ kanata (at boot)** | Whether macOS starts kanata at boot: `launchctl enable` / `disable system/local.kanata` |
 | **Quit Kanata Menubar** | Quits this app only — kanata keeps running, it's independent |
 
-Stopping, resuming and restarting change a **system** daemon, so macOS shows its standard
-administrator-password (or Touch ID) prompt each time. Reading status never prompts.
+Everything that changes kanata's **system** daemon (restart, stop, resume, at boot) shows macOS's
+standard administrator-password (or Touch ID) prompt. Reading its state never prompts.
 
-**Start at Login** is a per-user setting, off by default, and only affects this app. The agent
-starts the app at login, restarts it if it crashes, and leaves it quit after **Quit**. Updating the
-app (`brew upgrade`, `make install`) keeps it. It takes effect at your next login.
+**Start at Login ▸ Kanata Menubar** writes or deletes
+`~/Library/LaunchAgents/io.github.zepocas.kanata-menubar.plist`. The agent starts the app at login,
+restarts it if it crashes, and leaves it quit after **Quit**. Updating the app (`brew upgrade`,
+`make install`) keeps it. It takes effect at your next login. It's a plain LaunchAgent plist rather
+than `SMAppService`, on purpose: this app is ad-hoc signed, and `SMAppService` pins its registration
+to the exact build, so launchd refuses to start the app again after any update.
 
-It's a plain LaunchAgent plist rather than `SMAppService`, on purpose: this app is ad-hoc signed,
-and `SMAppService` pins its registration to the exact build, so launchd refuses to start the app
-again after any update.
+**Start at Login ▸ kanata (at boot)** is on as long as the daemon isn't `launchctl disable`d, which
+is the default: kanata's LaunchDaemon has `RunAtLoad` and `KeepAlive`, so macOS starts it at boot
+and relaunches it if it crashes, with or without this app. Turning it off persists across reboots
+but doesn't stop the running kanata. **Resume** and **Restart** still work while it's off: they
+enable the daemon just long enough to start it, then disable it again.
 
-**Does this start kanata automatically?** Not by itself. kanata's own LaunchDaemon has
-`RunAtLoad` and `KeepAlive` set, so macOS already starts it at boot and relaunches it on its own if
-it crashes — with or without this app running. This app never resumes it on your behalf; it only
-acts when *you* click something.
-
-**Does Stop Kanata survive a reboot?** No. `launchctl bootout` (what **Stop** runs) only removes
-kanata from the currently running launchd session. At the next boot or login, launchd reloads every
-LaunchDaemon under `/Library/LaunchDaemons` from scratch, `RunAtLoad` fires, and kanata comes back
-— regardless of whether you'd stopped it before. A `Stop` that survives reboots would need
-`launchctl disable system/local.kanata` instead, which isn't what this app does today.
+**Does Stop Kanata survive a reboot?** Only with **kanata (at boot)** off. **Stop** runs `launchctl
+bootout`, which only affects the current boot.
 
 ## Development
 

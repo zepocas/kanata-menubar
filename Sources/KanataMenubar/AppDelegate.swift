@@ -30,18 +30,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func restart() {
-        run { [services] in try await services.restart() }
+        let startsAtBoot = watcher.startsAtBoot
+        run { [services] in try await services.restart(startsAtBoot: startsAtBoot) }
     }
 
     func toggleStop() {
         let shouldStop = watcher.status.isLoaded
+        let startsAtBoot = watcher.startsAtBoot
         run { [services] in
             if shouldStop {
                 try await services.stop()
             } else {
-                try await services.start()
+                try await services.start(startsAtBoot: startsAtBoot)
             }
         }
+    }
+
+    func toggleStartsAtBoot() {
+        let on = !watcher.startsAtBoot
+        run { [services] in try await services.setStartsAtBoot(on) }
     }
 
     func toggleLoginItem() {

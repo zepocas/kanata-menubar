@@ -27,6 +27,20 @@ import Testing
         #expect(KanataStatus.parse(exitCode: 0, output: "system/local.kanata = {\n}") == .unknown)
     }
 
+    @Test func bootSettingFromPrintDisabled() {
+        let output = """
+        \tdisabled services = {
+        \t\t"com.apple.CSCSupportd" => disabled
+        \t\t"local.kanata" => disabled
+        \t\t"local.kanata.old" => enabled
+        \t}
+        """
+        #expect(LaunchdOverrides.isDisabled("local.kanata", inPrintDisabled: output))
+        #expect(!LaunchdOverrides.isDisabled("local.kanata.old", inPrintDisabled: output))
+        #expect(!LaunchdOverrides.isDisabled("com.example.unlisted", inPrintDisabled: output))
+        #expect(LaunchdOverrides.isDisabled("local.kanata", inPrintDisabled: "\t\t\"local.kanata\" => true"))
+    }
+
     @Test func isLoadedReflectsRunningAndLoadedNotRunningOnly() {
         #expect(KanataStatus.running.isLoaded)
         #expect(KanataStatus.loadedNotRunning.isLoaded)
