@@ -52,16 +52,19 @@ Menubar** into the visible section, using the manager's layout settings or ⌘-d
 | Kanata — running / stopped | Current state, shown greyed out |
 | **Restart Kanata** | `launchctl kickstart -k system/local.kanata`. Disabled while kanata is stopped |
 | **Stop Kanata** / **Resume Kanata** | Unloads (`bootout`) or reloads (`bootstrap`) the LaunchDaemon |
-| **Start at Login** | Toggles whether the app launches at login, via `SMAppService`. Off by default |
+| **Start at Login** | Writes or deletes `~/Library/LaunchAgents/io.github.zepocas.kanata-menubar.plist`. Off by default |
 | **Quit Kanata Menubar** | Quits this app only — kanata keeps running, it's independent |
 
 Stopping, resuming and restarting change a **system** daemon, so macOS shows its standard
 administrator-password (or Touch ID) prompt each time. Reading status never prompts.
 
-**Start at Login** is a per-user setting, off by default, and only affects this app — reinstalling
-it (e.g. `brew upgrade`) never turns it on or off on its own. If you toggle it on and later replace
-the app (a fresh `brew install` or `make install`), the registration still points at the same
-`/Applications/KanataMenubar.app` path and keeps working.
+**Start at Login** is a per-user setting, off by default, and only affects this app. The agent
+starts the app at login, restarts it if it crashes, and leaves it quit after **Quit**. Updating the
+app (`brew upgrade`, `make install`) keeps it. It takes effect at your next login.
+
+It's a plain LaunchAgent plist rather than `SMAppService`, on purpose: this app is ad-hoc signed,
+and `SMAppService` pins its registration to the exact build, so launchd refuses to start the app
+again after any update.
 
 **Does this start kanata automatically?** Not by itself. kanata's own LaunchDaemon has
 `RunAtLoad` and `KeepAlive` set, so macOS already starts it at boot and relaunches it on its own if
@@ -80,13 +83,9 @@ LaunchDaemon under `/Library/LaunchDaemons` from scratch, `RunAtLoad` fires, and
 Sources/MenubarCore/     status parsing (unit tested)
 Sources/KanataMenubar/   AppKit app: status item, menu, launchd control, login item
 Tests/MenubarCoreTests/  Swift Testing suite
-Resources/               Info.plist, LoginItem.plist (bundled LaunchAgent), generated AppIcon.icns
+Resources/               Info.plist, AppIcon.svg, generated AppIcon.icns
 scripts/                 bundle.sh (builds the .app), make-icon.sh (regenerates the app icon)
 ```
-
-Login item: `Sources/KanataMenubar/LoginItem.swift` wraps `SMAppService`. `Resources/LoginItem.plist`
-ships inside the app bundle at `Contents/Library/LaunchAgents/`; registering it is what the **Start
-at Login** menu item does, so there's no separate install script.
 
 | Command | Does |
 |---|---|
