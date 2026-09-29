@@ -22,6 +22,11 @@ extension AppDelegate: NSMenuDelegate {
         menu.addItem(stopResume)
 
         menu.addItem(.separator())
+        let loginItem = ActionMenuItem(title: "Start at Login") { [weak self] in self?.toggleLoginItem() }
+        loginItem.state = LoginItem.isEnabled ? .on : .off
+        menu.addItem(loginItem)
+
+        menu.addItem(.separator())
         menu.addItem(ActionMenuItem(title: "Quit Kanata Menubar", keyEquivalent: "q") {
             NSApp.terminate(nil)
         })

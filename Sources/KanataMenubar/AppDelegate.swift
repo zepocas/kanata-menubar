@@ -12,12 +12,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: StatusItemController!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        migrateLegacyLaunchAgent()
+
         menu.delegate = self
         menu.autoenablesItems = false
         statusItem = StatusItemController(menu: menu)
 
         watcher.onChange = { [weak self] status in self?.statusItem.show(status) }
         watcher.start()
+    }
+
+    /// Removes the plist installed by the old scripts/install-agents.sh (superseded by the Start at
+    /// Login menu item). `SMAppService.status` can't tell us whether *it* owns the job at this
+    /// label — any loaded job with a matching Label reads as "enabled" — so instead this looks at
+    /// the plist's own shape: the legacy one uses `ProgramArguments`, SMAppService's uses
+    /// `BundleProgram`. Only deletes the file; it deliberately doesn't `bootout` the currently
+    /// loaded job, since that job's process *is* this one, and bootout would kill it mid-cleanup.
+    /// Without the file, launchd simply won't reload it at the next login.
+    private func migrateLegacyLaunchAgent() {
+        let path = ("~/Library/LaunchAgents/io.github.zepocas.kanata-menubar.plist" as NSString).expandingTildeInPath
+        guard let plist = NSDictionary(contentsOfFile: path), plist["ProgramArguments"] != nil else { return }
+        try? FileManager.default.removeItem(atPath: path)
     }
 
     func restart() {
@@ -32,6 +47,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             } else {
                 try await services.start()
             }
+        }
+    }
+
+    func toggleLoginItem() {
+        do {
+            try LoginItem.toggle()
+        } catch {
+            presentError(error, title: "Couldn't change Start at Login")
         }
     }
 
@@ -53,11 +76,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func presentError(_ error: any Error) {
+    private func presentError(_ error: any Error, title: String = "Couldn't update Kanata") {
         NSApp.activate()
         let alert = NSAlert()
         alert.alertStyle = .warning
-        alert.messageText = "Couldn't update Kanata"
+        alert.messageText = title
         alert.informativeText = error.localizedDescription
         alert.runModal()
     }

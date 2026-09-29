@@ -10,10 +10,11 @@ swift build -c "$CONFIGURATION"
 BIN_DIR="$(swift build -c "$CONFIGURATION" --show-bin-path)"
 
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Library/LaunchAgents"
 cp "$BIN_DIR/KanataMenubar" "$APP/Contents/MacOS/KanataMenubar"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
+cp Resources/LoginItem.plist "$APP/Contents/Library/LaunchAgents/io.github.zepocas.kanata-menubar.plist"
 
 # VERSION is set by the release workflow from the pushed tag (e.g. "v0.1.0" -> "0.1.0").
 # Local builds fall back to the current tag, if any, or stay at the Info.plist default.

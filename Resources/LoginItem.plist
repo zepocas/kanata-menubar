@@ -4,10 +4,10 @@
 <dict>
     <key>Label</key>
     <string>io.github.zepocas.kanata-menubar</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>@APP@/Contents/MacOS/KanataMenubar</string>
-    </array>
+    <!-- BundleProgram is resolved relative to wherever this app bundle currently lives, so the
+         agent survives the app being moved or reinstalled at a different path. -->
+    <key>BundleProgram</key>
+    <string>Contents/MacOS/KanataMenubar</string>
     <key>RunAtLoad</key>
     <true/>
     <!-- Relaunch after a crash; "Quit" from the menu is a clean exit and stays quit. -->
@@ -18,11 +18,5 @@
     </dict>
     <key>ProcessType</key>
     <string>Interactive</string>
-    <key>LimitLoadToSessionType</key>
-    <string>Aqua</string>
-    <key>StandardOutPath</key>
-    <string>@HOME@/Library/Logs/kanata-menubar.log</string>
-    <key>StandardErrorPath</key>
-    <string>@HOME@/Library/Logs/kanata-menubar.log</string>
 </dict>
 </plist>
