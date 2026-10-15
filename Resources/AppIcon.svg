@@ -3,13 +3,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <defs>
     <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#576178"/>
-      <stop offset="1" stop-color="#333847"/>
+      <stop offset="0" stop-color="#219E8C"/>
+      <stop offset="1" stop-color="#0F6159"/>
     </linearGradient>
   </defs>
 
   <!-- macOS icon grid: 824pt body inset 100pt, continuous-corner radius ~185pt. -->
-  <rect x="100" y="100" width="824" height="824" rx="185" fill="#292e3b"/>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="#0D4540"/>
 
   <!-- Inset key face, like a keycap sculpt. -->
   <rect x="176" y="176" width="672" height="672" rx="130" fill="url(#face)"/>
