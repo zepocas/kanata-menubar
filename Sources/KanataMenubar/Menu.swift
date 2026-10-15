@@ -51,9 +51,20 @@ extension AppDelegate: NSMenuDelegate {
     private func statusItem(for status: KanataStatus) -> NSMenuItem {
         let item = NSMenuItem(title: status.label, action: nil, keyEquivalent: "")
         item.isEnabled = false
-        item.image = NSImage(systemSymbolName: "circle.fill", accessibilityDescription: nil)?
-            .withSymbolConfiguration(.init(pointSize: 8, weight: .regular).applying(.init(paletteColors: [dotColor(for: status)])))
+        item.image = Self.statusDot(dotColor(for: status))
         return item
+    }
+
+    /// Drawn by hand rather than via an SF Symbol: symbol images are templates, which menus
+    /// can render monochrome, dropping the tint.
+    private static func statusDot(_ color: NSColor) -> NSImage {
+        let image = NSImage(size: NSSize(width: 10, height: 10), flipped: false) { rect in
+            color.setFill()
+            NSBezierPath(ovalIn: rect.insetBy(dx: 1, dy: 1)).fill()
+            return true
+        }
+        image.isTemplate = false
+        return image
     }
 
     private func dotColor(for status: KanataStatus) -> NSColor {
