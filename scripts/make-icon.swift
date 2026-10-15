@@ -12,9 +12,9 @@ guard arguments.count == 2 else {
 let output = URL(fileURLWithPath: arguments[1], isDirectory: true)
 try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
 
-let capColor = NSColor(calibratedRed: 0.16, green: 0.18, blue: 0.23, alpha: 1)
-let faceTop = NSColor(calibratedRed: 0.34, green: 0.38, blue: 0.47, alpha: 1)
-let faceBottom = NSColor(calibratedRed: 0.20, green: 0.22, blue: 0.28, alpha: 1)
+let capColor = NSColor(calibratedRed: 0.05, green: 0.27, blue: 0.25, alpha: 1)
+let faceTop = NSColor(calibratedRed: 0.13, green: 0.62, blue: 0.55, alpha: 1)
+let faceBottom = NSColor(calibratedRed: 0.06, green: 0.38, blue: 0.35, alpha: 1)
 let glyphColor = NSColor(calibratedRed: 0.97, green: 0.98, blue: 1.0, alpha: 1)
 
 func render(pixels: Int) -> NSBitmapImageRep {
